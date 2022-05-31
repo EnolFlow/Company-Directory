@@ -1,0 +1,312 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="description" content="Company Directory" />
+      <meta name="keywords" content="Company Directory" />
+      <meta name="author" content="Alexandru Beraru" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+      <title>Company Directory</title>
+      <script src="https://kit.fontawesome.com/a95212fe6a.js" crossorigin="anonymous"></script>
+      <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+      <link rel="icon" type="image/x-icon" href="css/images/logo.png">
+     <link rel="stylesheet" href="css/style.css" >
+    </head>
+<body>
+
+<!-- Header -->
+
+  <div class='container-fluid' id='menu'>
+      <div class='row mt-3'>
+          <div class="col  form">
+              <input class="form-control" type='text' id='search' name='search' placeholder="Search">
+          </div>
+          <div class='col form'>
+              <select name="department" id="departmentsel" class="form-control" aria-label="Default select example">
+          </select> 
+          </div>
+          <div class='col form'>
+              <select name="location" id="locationsel"class="form-control" aria-label="Default select example">
+              </select>
+          </div>
+          <div type="button" class="col btn btn-primary btn-small form-control" id='reset'>Reset</div>        
+      </div>
+  </div>
+
+<!-- Body employee -->
+      <div class="card bg-light mt-2 records-card">
+          <div class="card-header d-flex sticky-top " id="personnelHeader">
+            <div class="flex-grow-1 badge "><h5><i class="fa-solid fa-people-group"></i> <span  id="countPersonnel"></span></h5></div>
+            <button type="button" class="btn btn-sm btn-primary " data-bs-toggle="modal" data-bs-target="#addEmployeeModal" id="addEmployeebtn">Add new</button>
+            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#searchModal">
+              <i class="fa-solid fa-gears"></i> 
+             </button>     
+          </div>
+          <div class="card-body" id="records-card-list">
+                  
+
+             
+
+              </div>
+          </div>
+         
+
+
+
+
+
+
+<div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" id="personnelHeader">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+   <div class="container-fluid">
+     <div class="row flex-fill">
+       <div class="col-12">
+        <button type="button" class="btn btn-sm btn-primary w-100 mb-2 " data-bs-toggle="modal" data-bs-target="#addDepModal" id="selDep">add Department</button>
+       </div>
+       <div class="col-12">
+        <button type="button" class="btn btn-sm btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#deleteDepModal" id="delDep">delete Department</button>
+       </div>
+       <div class="col-12">
+        <button type="button" class="btn btn-sm btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#addLocModal" id="selLoc">add Location</button>
+       </div>
+       <div class="col-12">
+        <button type="button" class="btn btn-sm btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#deleteLocModal" id="delLoc">delete Location</button>
+       </div>
+     </div>
+   </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addLocModal" tabindex="-1" role="dialog" aria-labelledby="addLocation" aria-hidden="true" >
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header" id="personnelHeader">
+        <h6 class="modal-title" id="addLocation">Add new location</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+        </button>
+      </div>
+      <div class="modal-body">
+          <form>
+              <div class="form">
+                <input class="form-control" id="newLoc"></input>
+              </div>
+            </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="confirmBtn btn" type="submit" id='saveLoc'>Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="addDepModal" tabindex="-1" role="dialog" aria-labelledby="addDepartment" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header" id="personnelHeader">
+        <h6 class="modal-title" id="addDepartment">Add new Department</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+        </button>
+      </div>
+      <div class="modal-body">
+          <form>
+              <div class="form">
+                <label for="newDep">Name of new department</label>
+                <input class="form-control" id="newDep"></input>
+              </div>
+              <div class="form">
+                  <label for="locSelDep">Location</label>
+                  <select class="form-control" id="locDepSelect">
+                  </select>
+                </div>
+            </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="confirmBtn btn" id='saveDep'>Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="deleteLocModal" tabindex="-1" role="dialog" aria-labelledby="deleteLocstion" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header" id="personnelHeader">
+        <h6 class="modal-title"> Delete Location</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+        
+        </button>
+      </div>
+      <div class="modal-body">
+          <form>
+              <div class="form">
+                  <label for="deleteLocSel">Location</label>
+                  <select class="form-control" id='deleteLocSel'>
+                  </select>
+                </div>
+            </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="confirmBtn btn" id='deleteLocBtn'>Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="deleteDepModal" tabindex="-1" role="dialog" aria-labelledby="deleteDepartment" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header" id="personnelHeader">
+        <h6 class="modal-title"> Delete Department</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+        
+        </button>
+      </div>
+      <div class="modal-body">
+          <form>
+              <div class="form">
+                  <label for="deleteDepSel">Department</label>
+                  <select class="form-control" id='deleteDepSel'>
+                  </select>
+                </div>
+            </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="confirmBtn btn" id='deleteDepBtn'>Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="addEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="addEmployee" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header" id="personnelHeader">
+        <h6 class="modal-title">New Employee</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+        
+        </button>
+      </div>
+      <div class="modal-body">
+          <form>
+              <div class="form">
+                <label for="newFirstName">First Name</label>
+                <input class="form-control" id="newFirstName"></input>
+              </div>
+              <div class="form">
+                  <label for="newLastName">Last Name</label>
+                  <input class="form-control" id="newLastName"></input>
+                </div>
+                <div class="form">
+                  <label for="newJobTitle">Job Title</label>
+                  <input class="form-control" id="newJobTitle"></input>
+                </div>
+                <div class="form">
+                  <label for="newEmail">Email</label>
+                  <input class="form-control" id="newEmail"></input>
+                </div>
+              <div class="form">
+                  <label for="employeeDepSelect">Department</label>
+                  <select class="form-control" id="employeeDepSelect">
+                  </select>
+                </div>
+            </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="confirmBtn btn" id='saveEmployee'>Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="deleteEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="deleteEmployee" aria-hidden="true" >
+  <div class="modal-dialog " role="document">
+    <div class="modal-content">
+      <div class="modal-header" id="personnelHeader">
+        <h6 class="modal-title"> Delete Employee</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+        
+        </button>
+      </div>
+      <div class="modal-body">
+              <div>Are you sure?</div>  
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="confirmBtn btn" id='deleteEmployeeConfirmBtn'>Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="editEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="updateEmployee" aria-hidden="true" >
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+    <div class="modal-header" id="personnelHeader">
+      <h6 class="modal-title">Update Employee</h6>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+      </button>
+    </div>
+    <div class="modal-body">
+      <form>
+        <div class="form">
+          <label for="FirstName">First Name</label>
+          <input class="form-control" id="FirstName" value=""></input>
+        </div>
+        <div class="form">
+          <label for="LastName">Last Name</label>
+          <input class="form-control" id="LastName" value=""></input>
+          </div>
+          <div class="form">
+          <label for="JobTitle">Job Title</label>
+          <input class="form-control" id="JobTitle" value=""></input>
+          </div>
+          <div class="form">
+          <label for="Email">Email</label>
+          <input class="form-control" id="Email" value=""></input>
+          </div>
+        <div class="form">
+          <label for="updateDepSelect">Department</label>
+          <select class="form-control" id="updateDepSelect">
+          </select>
+          </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      <button class="confirmBtn btn" id='updateEmployeeConfirmBtn'>Save</button>
+    </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModal" aria-hidden="true">
+<div class="modal-dialog " role="document">
+<div class="modal-content">
+<div class="modal-header">
+</div>
+<div class="modal-body" id='errorBody'>
+</div>
+<div class="modal-footer" id='errorFooter'>
+</div>
+</div>
+</div>
+</div>
+
+ <!-- loader -->
+ <div id="loader">
+
+ </div>
+
+    <script src="js/jquery-2.2.3.min.js"> </script>
+    <script src='bootstrap/js/bootstrap.min.js'></script>
+    <script src="js/script.js"></script>    
+</body>
+</html>
