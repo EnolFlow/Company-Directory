@@ -17,70 +17,166 @@
 <body>
 
 <!-- Header -->
-
-  <div class='container-fluid' id='menu'>
-      <div class='row mt-3'>
-          <div class="col  form">
-              <input class="form-control" type='text' id='search' name='search' placeholder="Search">
-          </div>
-          <div class='col form'>
-              <select name="department" id="departmentsel" class="form-control" aria-label="Default select example">
-          </select> 
-          </div>
-          <div class='col form'>
-              <select name="location" id="locationsel"class="form-control" aria-label="Default select example">
-              </select>
-          </div>
-          <div type="button" class="col btn btn-primary btn-small form-control" id='reset'>Reset</div>        
-      </div>
+<div class="na" id='menu' >
+  <div class="nav-btn-container">
+    <div class="row " style="text-align: center;">
+      <div class="col-4">
+    <button id="employees-btn" class="btn" type="button">
+      employees
+    </button>
   </div>
+  <div class="col-4">
+    <button id="departments-btn" class="btn" type="button">
+      departments
+    </button>
+  </div>
+  <div class="col-4">
+    <button id="locations-btn" class="btn" type="button">
+      locations
+    </button>
+  </div>
+  </div>
+  </div>
+</div>
+  
 
 <!-- Body employee -->
       <div class="card bg-light mt-2 records-card">
           <div class="card-header d-flex sticky-top " id="personnelHeader">
-            <div class="flex-grow-1 badge "><h5><i class="fa-solid fa-people-group"></i> <span  id="countPersonnel"></span></h5></div>
+            <div class="flex-grow-1 badge "><h5><span id="insertIcon"></span> <span  id="count"></span></h5></div>
             <button type="button" class="btn btn-sm btn-primary " data-bs-toggle="modal" data-bs-target="#addEmployeeModal" id="addEmployeebtn">Add new</button>
-            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#searchModal">
+            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#searchModal" id="modals">
               <i class="fa-solid fa-gears"></i> 
-             </button>     
+             </button>
+             <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#search" id="searchModals">
+              <i class="fa-solid fa-magnifying-glass"></i>  </button>     
+            </div>
+            <div id="tableBlock">
+              <table  class="table table-striped table-hover">
+                <tbody id="records-card-list">
+
+                          </tbody>
+              </table>
+  
+               
+  
+                </div>
+            </div>
+           
+    <!-- Search Employee Modal -->
+    <div class="modal fade" id="search" tabindex="-1" role="dialog" aria-labelledby="addEmployee" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" role="document">
+          <div class="modal-header" id="personnelHeader">
+            <h6>Search Employees</h6>
           </div>
-          <div class="card-body" id="records-card-list">
-                  
+          <div class="modal-body">
+            <form>
+                <div class="form">
+                  <label for="name">Name</label>
+                  <input class="form-control" id="name"></input>
+                </div>
+              
+                
+                <div class="form">
+                  <label for="departmentsel">Department</label>
+                  <select class="form-control" id="departmentsel">
+                  </select>
+                </div>
+                <div class="form">
+                    <label for="locationsel">Location</label>
+                    <select class="form-control" id="locationsel">
+                    </select>
+                  </div>
+              </form>
+        </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              id="reset"
+            >
+              Reset
+            </button>
+            <button
+              id="employee-search"
+              type="button"
+              class="btn btn-success"
+              data-bs-dismiss="modal"
+            >
+              Search
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-             
 
+
+    
+
+            <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header" id="personnelHeader">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+               <div class="container-fluid">
+                 <div class="row flex-fill">
+                   <div class="col-12">
+                    <button type="button" class="btn btn-sm btn-primary w-100 mb-2 " data-bs-toggle="modal" data-bs-target="#addDepModal" id="selDep">add Department</button>
+                   </div>
+                   <div class="col-12">
+                    <button type="button" class="btn btn-sm btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#deleteDepModal" id="delDep">delete Department</button>
+                   </div>
+                   <div class="col-12">
+                    <button type="button" class="btn btn-sm btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#addLocModal" id="selLoc">add Location</button>
+                   </div>
+                   <div class="col-12">
+                    <button type="button" class="btn btn-sm btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#deleteLocModal" id="delLoc">delete Location</button>
+                   </div>
+                 </div>
+               </div>
+                  </div>
+                </div>
               </div>
-          </div>
-         
+            </div>
 
 
 
 
-
-
-<div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+<div class="modal fade" id="search" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" >
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header" id="personnelHeader">
+        <h6 class="modal-title" >Search Employees</h6>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-   <div class="container-fluid">
-     <div class="row flex-fill">
-       <div class="col-12">
-        <button type="button" class="btn btn-sm btn-primary w-100 mb-2 " data-bs-toggle="modal" data-bs-target="#addDepModal" id="selDep">add Department</button>
-       </div>
-       <div class="col-12">
-        <button type="button" class="btn btn-sm btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#deleteDepModal" id="delDep">delete Department</button>
-       </div>
-       <div class="col-12">
-        <button type="button" class="btn btn-sm btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#addLocModal" id="selLoc">add Location</button>
-       </div>
-       <div class="col-12">
-        <button type="button" class="btn btn-sm btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#deleteLocModal" id="delLoc">delete Location</button>
-       </div>
-     </div>
-   </div>
+        <div class='container-fluid' >
+          <div class='row mt-3'>
+              <div class="col  form">
+                  <input class="form-control" type='text' id='search' name='search' placeholder="Search">
+              </div>
+              <div class='col form'>
+                  <select name="department" id="departmentsel" class="form-control" aria-label="Default select example">
+              </select> 
+              </div>
+              <div class='col form'>
+                  <select name="location" id="locationsel"class="form-control" aria-label="Default select example">
+                  </select>
+              </div>
+              <div type="button" class="col btn btn-primary btn-small form-control" id='reset'>Reset</div>        
+          </div>
+      </div>
       </div>
     </div>
   </div>
