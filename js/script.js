@@ -1,116 +1,76 @@
 
 
-let circleColors = ['primary','secondary','success','danger','warning','info'];
-let data = [];
-let departmentdb = [];
-let locationdb =[];
+let circleColors = ['primary','secondary','success','warning','info','light'];
 
 
 $(document).ready(function () {
 	$("#loader").fadeOut("slow");
+     main()
+  });
+
+  function main(){
 	getEmployees();
 	getDepartments();
-	getLocations() ;
+	getLocations() ; 
+  }
+
+  let departmentdb = [];
+  
+  $('#employee-search').on('click',function() {    
+	searchEmployee();
+
   });
 
-  $('#search').change(function() {
-	getEmployeeByName();
-  });
+  $('#searchModals').click(
+    function(){
+    $('#departmentsel').val('placeholder'); 
+    $('#locationsel').val('placeholder'); 
+    $('#name').val('');
+    }
+);
 
-  $('#departmentsel').change(function(){
-	filterEmployeesByDepartment();
-  })
+   
   
-  $('#locationsel').change(function(){
-	filterEmployeesByLocation();
-  }) 
-  
+  $('#employees-btn').click(
+    function(){
+    getEmployees();
+    }
+);
+
+$('#departments-btn').click(
+    function(){
+    buildDepartments();
+    }
+);
+$('#locations-btn').click(
+    function(){
+    buildLocations();
+    }
+);
 
 
   $('#reset').click(
     function(){
-    getEmployees();
     $('#departmentsel').val('placeholder'); 
     $('#locationsel').val('placeholder'); 
-    $('#search').val('');
+    $('#name').val('');
     }
 );
 
+ 
+
 $('#saveLoc').click(
 	function(){
-	  function alreadyRegistered(){
-		let exist; 
-		for (let i=0; i<locationdb.length; i++){
-		  if (locationdb[i].name == $('#newLoc').val()){
-		   exist=true;
-		   break;
-		  } else {
-			exist=false;
-		  }
-		  }
-		  return exist
-		}
-	  let registered = alreadyRegistered();
-	  let length = checkLength($('#newLoc').val());
-	  let incorrectCharacters= validateInput($('#newLoc').val())
-	  if(registered){
-		showErrorModal('This location exists already.')
-	  } else if (!length){
-		showErrorModal("Valid Input for new location is between 2 and 50 characters."); 
-	  } else if (incorrectCharacters){
-		showErrorModal('Invalid characters. Please only use letters and white spaces.'); 
-	  }
-	  else {
-		addNewLocation();
-		$('#addLocModal').modal('hide');
-		$('#newLoc').val('');
-	  }
-	}
-  );
-
-  $('#saveDep').click(
-	function(){
-	  function alreadyRegistered(){
-		let exist; 
-		for (let i=0; i<departmentdb.length; i++){
-		  if (departmentdb[i].name == $('#newDep').val()){
-		   exist=true;
-		   break;
-		  } else {
-			exist=false;
-		  }
-		  }
-		  return exist
-		}
-	  let registered = alreadyRegistered();
-	  let lengthChecked = checkLength($('#newDep').val());
-	  let incorrectCharacters= validateInput($('#newDep').val());
-	  if(registered){
-		showErrorModal ('This department exists already.');
-	  } else if(!lengthChecked) {
-		showErrorModal("Valid Input for new department is between 2 and 50 characters."); 
-	  } else if(incorrectCharacters) {
-		showErrorModal('Invalid characters. Please only use letters and white spaces.'); 
-	  }else if (!$('#locDepSelect').val()){
-		showErrorModal('Choose a location.');
-	  } else {
-		addNewDepartment();
-		$('#addDepModal').modal('hide');
-		$('#newDep').val('');
-	  }
-	}
-  );
-  
-  $('#saveEmployee').click(
-	function(){
-		let email = $('#newEmail').val()
-		let fName = $('#newFirstName').val();
-		let lName = $('#newLastName').val();
-		let job = $('#newJob').val();
+	$.ajax({
+		url: "php/getAllLocations.php",
+		type: 'GET',
+		dataType: 'json', 
+		success: function(result) {
+		   let   locationdb= result.data
 		function alreadyRegistered(){
 		  let exist; 
-		  for (let i=0; i<data.length; i++){
-			if ((data[i].firstName == fName && data[i].lastName == lName)||data[i].email == email){
+		  for (let i=0; i<locationdb.length; i++){
+			if (locationdb[i].name == $('#newLoc').val()){
 			 exist=true;
 			 break;
 			} else {
@@ -120,13 +80,114 @@ $('#saveLoc').click(
 			return exist
 		  }
 		let registered = alreadyRegistered();
-		let valid = validateEmployeeEntry('employeeDepSelect', email, fName, lName, job);
+		let length = checkLength($('#newLoc').val());
+		let incorrectCharacters= validateInput($('#newLoc').val())
 		if(registered){
-		  showErrorModal('An employee with these details is already registered in the database.');
-		} else if (valid){
-		  addNewEmployee();
-		  $('#addEmployeeModal').modal('hide')
+		  showErrorModal('This location exists already.')
+		} else if (!length){
+		  showErrorModal("Valid Input for new location is between 2 and 50 characters."); 
+		} else if (incorrectCharacters){
+		  showErrorModal('Invalid characters. Please only use letters and white spaces.'); 
 		}
+		else {
+		  addNewLocation();
+		  $('#addLocModal').modal('hide');
+		  $('#newLoc').val('');
+		}
+	  
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+		  console.log(jqXHR + textStatus+ errorThrown )
+		}
+	  })  
+	}
+  );
+
+  $('#saveDep').click(
+	  function(){
+	$.ajax({
+		url: "php/getAllDepartments.php",
+		type: 'GET',
+		dataType: 'json', 
+		success: function(result) {
+		   let departmentdb = result.data;
+		   
+		   	function alreadyRegistered(){
+		  let exist; 
+		  for (let i=0; i<departmentdb.length; i++){
+			if (departmentdb[i].name == $('#newDep').val()){
+			 exist=true;
+			 break;
+			} else {
+			  exist=false;
+			}
+			}
+			return exist
+		  }
+		let registered = alreadyRegistered();
+		let lengthChecked = checkLength($('#newDep').val());
+		let incorrectCharacters= validateInput($('#newDep').val());
+		if(registered){
+		  showErrorModal ('This department exists already.');
+		} else if(!lengthChecked) {
+		  showErrorModal("Valid Input for new department is between 2 and 50 characters."); 
+		} else if(incorrectCharacters) {
+		  showErrorModal('Invalid characters. Please only use letters and white spaces.'); 
+		}else if (!$('#locDepSelect').val()){
+		  showErrorModal('Choose a location.');
+		} else {
+		  addNewDepartment();
+		  $('#addDepModal').modal('hide');
+		  $('#newDep').val('');
+		}
+
+		  
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+		  console.log(jqXHR + textStatus+ errorThrown );
+		}
+	  })
+	}  
+  );
+  
+  $('#saveEmployee').click(
+	function(){
+	
+		$.ajax({
+			url: "php/getAll.php",
+			type: 'POST',
+			dataType: 'json',
+			data: {		},
+			success: function(result) {
+				let data = result.data;
+				let email = $('#newEmail').val()
+				let fName = $('#newFirstName').val();
+				let lName = $('#newLastName').val();
+				let job = $('#newJob').val();
+				function alreadyRegistered(){
+				  let exist; 
+				  for (let i=0; i<data.length; i++){
+					if ((data[i].firstName == fName && data[i].lastName == lName)||data[i].email == email){
+					 exist=true;
+					 break;
+					} else {
+					  exist=false;
+					}
+					}
+					return exist
+				  }
+				let registered = alreadyRegistered();
+				let valid = validateEmployeeEntry('employeeDepSelect', email, fName, lName, job);
+				if(registered){
+				  showErrorModal('An employee with these details is already registered in the database.');
+				} else if (valid){
+				  addNewEmployee();
+				  $('#addEmployeeModal').modal('hide')
+				}
+				     
+				},
+				error: function(jqXHR, textStatus, errorThrown) {}
+			}); 
 		}     
   );
   
@@ -224,7 +285,8 @@ $('#saveLoc').click(
   
 
   function random_color (circleColors) {
-	return Math.floor((Math.random()*circleColors.length));
+	  const color = Math.floor((Math.random()*circleColors.length));
+	return color
   }
 
   //Error display
@@ -246,11 +308,16 @@ function   getEmployees(){
 		dataType: 'json',
 		data: {		},
 		success: function(result) {	
+			$('#addEmployeebtn').show();	
+		    $('#modals').show();
+			$('#searchModals').show();	
 			$('#records-card-list').html('');		
-			$('#countPersonnel').html('');		    
-               data = result.data;
-			   $('#countPersonnel').html(data.length);
-			 
+			$('#count').html('');
+			$('#insertIcon').html('');
+              let data = result.data;
+
+			   $('#count').html(data.length);
+			   $('#insertIcon').html('<i class="fa-solid fa-people-group"></i>');
 
               for (let i = 0; i < data.length; i++) {
 				  let department = data[i].department;
@@ -267,7 +334,7 @@ function   getEmployees(){
 				  $('#records-card-list').append(new_card);
 				  updateEmployeeClick(id)
 				  deleteEmployeeClick(id);
-				
+				  
 			  }  
 
 			 					
@@ -281,25 +348,64 @@ function   getEmployees(){
 
 function createEmployeeCard(id, first_name, last_name, email, department, job, location, span_avatr){  
 	let new_card = `
-				  <div id="${id}" class=" list-item list-item-action mb-3" data-toggle="list" role="tab">
-                  <div class="row">
-                  <div class="col-3 avatar avatar-text rounded-3 px-1 me-2 mb-2  bg-${circleColors[random_color(circleColors)]}">${span_avatr}</div>
-				  <div class="col-9 mt-2 " style=" font-weight: bold;">${last_name + " " + first_name}
-				  <button type="button" class="btn btn-sm btn-outline-success mx-1" data-bs-toggle="modal" data-bs-target="#editEmployeeModal" id="edit${id}" value="${id}"><img src="css/images/pencil.svg"></button>
-				  <button type="button" class="btn btn-sm btn-outline-danger mx-0" data-bs-toggle="modal" data-bs-target="#deleteEmployeeModal" id="del${id}" value="${id}"><img src="css/images/trash.svg"></button>
-				  </div>
-				  <div class="row">
-				  <a  href="mailto:${email}" class="col-sm-2 col-md-3  mb-1 ms-5" style="color:navy; font-family:Arial; "><i class="fa-solid fa-envelope"></i>${email}</a>
-				  
-				  <div class="col-sm-2 col-md-3 badge rounded-pill bg-danger mb-1" >${job}</div>
-                  <div class="col-sm-2 col-md-3 badge rounded-pill bg-info mb-1" ><i class="fa-solid fa-user-pen"></i>${department}</div>
-                  <div class="col-sm-2 col-md-2 badge rounded-pill bg-success "><i class="fa-solid fa-location-dot"></i>${location}</div>
-				  </div>
-                  </div>
+
+	<tr>
+	<td class=" avatar avatar-text rounded-3   bg-${circleColors[random_color(circleColors)]}">${span_avatr}</td>
+	<td>${last_name + " " + first_name}</td>
+	<td class="hidden"><a  href="mailto:${email}" class=" style="color:navy; font-family:Arial; "><i class="fa-solid fa-envelope"></i>${email}</a>
+	</td>
+	<td class="hidden">${department}</td>
+	<td class="hidden">${location}</td>
+	<td class="hidden">${job}</td>
+	<td><button type="button" class="btn btn-sm btn-success " data-bs-toggle="modal" data-bs-target="#editEmployeeModal" id="edit${id}" value="${id}"><img src="css/images/pencil.svg"></button></td>
+	<td> <button type="button" class="btn btn-sm btn-danger " data-bs-toggle="modal" data-bs-target="#deleteEmployeeModal" id="del${id}" value="${id}"><img src="css/images/trash.svg"></button>
+	</td>
+
                 
 				  `
   return new_card
    };
+
+   function buildDepartments() { 
+    $.ajax({
+      url: "php/getAllDepartments.php",
+      type: 'GET',
+      dataType: 'json', 
+      success: function(result) {
+		let departmentdb = result.data;
+		$('#addEmployeebtn').hide();	
+		$('#modals').hide();	
+		$('#searchModals').hide();		
+		$('#records-card-list').html('');		
+		$('#count').html('');
+		$('#insertIcon').html('');
+		  $('#count').html(departmentdb.length);
+		  $('#insertIcon').html('<i class="fa-solid fa-user-pen"></i>');
+         
+		  for (let i = 0; i < departmentdb.length; i++) {
+			let department = departmentdb[i].name;
+			  let first_letterF = departmentdb[i].name.charAt(0);
+			  let span_avatr =  first_letterF;
+			
+			 let departments = `
+
+	<tr>
+	<td class=" avatar avatar-text rounded-3   bg-${circleColors[random_color(circleColors)]}">${span_avatr}</td>
+	<td >${department}</td>
+	</tr>
+
+                
+				  `
+				  $('#records-card-list').append(departments);
+			  
+		}
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR + textStatus+ errorThrown );
+      }
+    }); 
+    
+  }
 
    
 
@@ -315,6 +421,7 @@ function createEmployeeCard(id, first_name, last_name, email, department, job, l
 		  getDropdowns($('#departmentsel'), departmentdb, placeholder);
           getDropdowns($('#employeeDepSelect'), departmentdb, placeholder);
           getDropdowns($('#deleteDepSel'), departmentdb, placeholder);
+		  
       },
       error: function(jqXHR, textStatus, errorThrown) {
         console.log(jqXHR + textStatus+ errorThrown );
@@ -323,13 +430,54 @@ function createEmployeeCard(id, first_name, last_name, email, department, job, l
     
   }
 
+  function buildLocations()  {
+    $.ajax({
+      url: "php/getAllLocations.php",
+      type: 'GET',
+      dataType: 'json', 
+      success: function(result) {
+          let  locationdb= result.data;
+			$('#addEmployeebtn').hide();	
+			$('#modals').hide();	
+			$('#searchModals').hide();		
+			$('#records-card-list').html('');		
+			$('#count').html('');
+			$('#insertIcon').html('');
+			  $('#count').html(locationdb.length);
+			  $('#insertIcon').html('<i class="fa-solid fa-location-dot"></i>');
+			  for (let i = 0; i < locationdb.length; i++) {
+				let location = locationdb[i].name;
+				  let first_letterF = locationdb[i].name.charAt(0);
+				  let span_avatr =  first_letterF;
+				
+				 let locations = `
+	
+		<tr>
+		<td class=" avatar avatar-text rounded-3   bg-${circleColors[random_color(circleColors)]}">${span_avatr}</td>
+		<td >${location}</td>
+		</tr>
+	
+					
+					  `
+					  $('#records-card-list').append(locations);
+				  
+			}
+
+
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR + textStatus+ errorThrown )
+      }
+    });   
+  }
+
   function getLocations()  {
     $.ajax({
       url: "php/getAllLocations.php",
       type: 'GET',
       dataType: 'json', 
       success: function(result) {
-            locationdb= result.data
+         let   locationdb= result.data
             let placeholder = 'Select Location'
             getDropdowns($('#locationsel'), locationdb, placeholder);
             getDropdowns($('#locDepSelect'), locationdb, placeholder);
@@ -341,100 +489,7 @@ function createEmployeeCard(id, first_name, last_name, email, department, job, l
     });   
   }
 
-  function getEmployeeByName(){
-	$.ajax({
-	  url: "php/getEmployeeByName.php",
-	  type: 'POST',
-	  dataType: 'json', 
-	  data:{
-		firstName : $('#search').val(),
-		lastName: $('#search').val()
-	  },
-	  success: function(result) {
-		$('#records-card-list').html('');
-		   let employeeMatch = result.data;
-			for (let j=0; j<employeeMatch.length; j++){
-			  for(let i=0; i<data.length; i++){
-			  if (data[i].firstName == employeeMatch[j].firstName || data[i].lastName == employeeMatch[j].lastName){
-			  let id= data[i].id;
-			  let first_name = data[i].firstName;
-			  let last_name= data[i].lastName;
-			  let email = data[i].email;
-			  let department = data[i].department;
-			  let job = data[i].jobTitle;
-			  let location = data[i].location;
-			  let first_letterF = data[i].firstName.charAt(0);
-			  let first_letterL =  data[i].lastName.charAt(0);
-			  let span_avatr = first_letterL + first_letterF;
-			  let new_card = createEmployeeCard(id, first_name, last_name, email, department, job, location, span_avatr);
-				  $('#records-card-list').append(new_card);
-				  updateEmployeeClick(id);
-				  deleteEmployeeClick(id);
-			  }
-			  }
-			}
-	  },
-	  error: function(jqXHR, textStatus, errorThrown) {
-		console.log(jqXHR + textStatus+ errorThrown )
-	  }
-	}); 
-   
-   }
-
-   // filter database
  
- function filterEmployeesByDepartment(){
-		$('#records-card-list').html('');
-	let location ='';
-	for (let i= 0; i< data.length; i++){
-		
-	  let department = data[i].department;
-	  if (department ==$('#departmentsel option:selected').text()){
-	  let id = data[i].id;
-	  let first_name = data[i].firstName;
-	  let last_name= data[i].lastName;
-	  let email = data[i].email;
-	  let job = data[i].jobTitle;
-	  location = data[i].location;
-	  let first_letterF = data[i].firstName.charAt(0);
-	let first_letterL =  data[i].lastName.charAt(0);
-	let span_avatr = first_letterL + first_letterF;
-	  let new_card = createEmployeeCard(id, first_name, last_name, email, department, job, location, span_avatr);
-				  $('#records-card-list').append(new_card);
-				  updateEmployeeClick(id);
-				  deleteEmployeeClick(id);
-	  }
-	  }
-	for (let j=0; j<locationdb.length; j++) {
-	  if (location == locationdb[j].name){
-		let locationID = locationdb[j].id
-		$('#locationsel').val(locationID); 
-	  }
-	}
-}
-
-function filterEmployeesByLocation(){
-	$('#records-card-list').html('');
-	for (let i= 0; i< data.length; i++){
-	  let location = data[i].location;
-	  if (location ==$('#locationsel option:selected').text()){
-	  let id = data[i].id;
-	  let first_name = data[i].firstName;
-	  let last_name= data[i].lastName;
-	  let email = data[i].email;
-	  let department = data[i].department;
-	  let job = data[i].jobTitle;
-	  let first_letterF = data[i].firstName.charAt(0);
-	  let first_letterL =  data[i].lastName.charAt(0);
-	  let span_avatr = first_letterL + first_letterF;
-		let new_card = createEmployeeCard(id, first_name, last_name, email, department, job, location, span_avatr);
-					$('#records-card-list').append(new_card);
-					updateEmployeeClick(id);
-					deleteEmployeeClick(id);
-
-	  }
-	}
-}
 
 function addNewLocation() {
 	$.ajax({
@@ -511,26 +566,38 @@ function addNewLocation() {
 }
   
 function appendUpdateForm(id){
-  $('#editEmployeeModal').html('');
-  for (let i= 0; i< data.length; i++){
-    let employeeID = data[i].id;
-    if (employeeID == id){
-    let firstName = data[i].firstName;
-    let lastName= data[i].lastName;
-    let job = data[i].jobTitle;
-    let email = data[i].email;
-    let department = data[i].department;
-    let updateForm = createUpdateForm(firstName, lastName, job, email);
-    $('#editEmployeeModal').append(updateForm);
-    getDropdowns($('#updateDepSelect'), departmentdb);
-    for(let i=0; i<departmentdb.length; i++){
-      if(department == departmentdb[i].name){
-        $("#updateDepSelect").val(departmentdb[i].id);
-        break; 
-      } 
-    }
-    }
-  }
+
+	$.ajax({
+		url: "php/getAll.php",
+		type: 'POST',
+		dataType: 'json',
+		data: {		},
+		success: function(result) {
+			$('#editEmployeeModal').html('');
+			let data = result.data;
+			for (let i= 0; i< data.length; i++){
+			  let employeeID = data[i].id;
+			  if (employeeID == id){
+			  let firstName = data[i].firstName;
+			  let lastName= data[i].lastName;
+			  let job = data[i].jobTitle;
+			  let email = data[i].email;
+			  let department = data[i].department;
+			  let updateForm = createUpdateForm(firstName, lastName, job, email);
+			  $('#editEmployeeModal').append(updateForm);
+			  getDropdowns($('#updateDepSelect'), departmentdb);
+			  for(let i=0; i<departmentdb.length; i++){
+				if(department == departmentdb[i].name){
+				  $("#updateDepSelect").val(departmentdb[i].id);
+				  break; 
+				} 
+			  }
+			  }
+			}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {}
+		}); 
+
 }
 
   function createUpdateForm(fName, lName, job, mail){
@@ -544,23 +611,23 @@ function appendUpdateForm(id){
        </div>
        <div class="modal-body">
            <form>
-               <div class="form-group">
+               <div class="form">
                  <label for="FirstName">First Name</label>
                  <input class="form-control" id="FirstName" value="${fName}"></input>
                </div>
-               <div class="form-group">
+               <div class="form">
                    <label for="LastName">Last Name</label>
                    <input class="form-control" id="LastName" value="${lName}"></input>
                  </div>
-                 <div class="form-group">
+                 <div class="form">
                    <label for="JobTitle">Job Title</label>
                    <input class="form-control" id="JobTitle" value="${job}"></input>
                  </div>
-                 <div class="form-group">
+                 <div class="form">
                    <label for="Email">Email</label>
                    <input class="form-control" id="Email" value="${mail}"></input>
                  </div>
-               <div class="form-group">
+               <div class="form">
                    <label for="updateDepSelect">Department</label>
                    <select class="form-control" id="updateDepSelect">
                    </select>
@@ -754,3 +821,273 @@ function checkDeleteDep(depID){
 	})
   }
   
+  function searchEmployee(){
+let	departmentSelect = $('#departmentsel option:selected').val();	
+let	locationSelect = $('#locationsel option:selected').val();
+	let value = $('#name').val();
+	if ((value) && (departmentSelect === 'placeholder') && (locationSelect === 'placeholder')) {
+	 $.ajax({
+	  url: "php/getEmployeeByName.php",
+	  type: 'POST',
+	  dataType: 'json', 
+	  data:{
+		value: value
+	  },
+	  success: function(result) {
+		$('#records-card-list').html('');
+		$('#count').html('');
+		let data = result.data;
+		$('#count').html(data.length);
+		for (let i=0; i<data.length; i++){
+		
+			let id= data[i].id;
+			let first_name = data[i].firstName;
+			let last_name= data[i].lastName;
+			let email = data[i].email;
+			let department = data[i].department;
+			let job = data[i].jobTitle;
+			let location = data[i].location;
+			let first_letterF = data[i].firstName.charAt(0);
+			let first_letterL =  data[i].lastName.charAt(0);
+			let span_avatr = first_letterL + first_letterF;
+			let new_card = createEmployeeCard(id, first_name, last_name, email, department, job, location, span_avatr);
+				$('#records-card-list').append(new_card);
+				updateEmployeeClick(id);
+				deleteEmployeeClick(id);
+ 
+		}
+		   
+		 
+			
+	  },
+	  error: function(jqXHR, textStatus, errorThrown) {
+		console.log(jqXHR + textStatus+ errorThrown )
+	  }
+    	}); 
+   
+     }
+
+	else if ((value) && (departmentSelect !== 'placeholder') && (locationSelect === 'placeholder')) {
+		$.ajax({
+		 url: "php/searchDepartment.php",
+		 type: 'POST',
+		 dataType: 'json', 
+		 data:{
+			value: value,
+            id: departmentSelect
+		   
+		 },
+		 success: function(result) {
+		
+		   $('#records-card-list').html('');
+		   $('#count').html('');
+		   let data = result.data;
+		   $('#count').html(data.length);
+		   for (let i=0; i<data.length; i++){
+		   
+			   let id= data[i].id;
+			   let first_name = data[i].firstName;
+			   let last_name= data[i].lastName;
+			   let email = data[i].email;
+			   let department = data[i].department;
+			   let job = data[i].jobTitle;
+			   let location = data[i].location;
+			   let first_letterF = data[i].firstName.charAt(0);
+			   let first_letterL =  data[i].lastName.charAt(0);
+			   let span_avatr = first_letterL + first_letterF;
+			   let new_card = createEmployeeCard(id, first_name, last_name, email, department, job, location, span_avatr);
+				   $('#records-card-list').append(new_card);
+				   updateEmployeeClick(id);
+				   deleteEmployeeClick(id);
+	
+		   }
+			  
+			
+			   
+		 },
+		 error: function(jqXHR, textStatus, errorThrown) {
+		   console.log(jqXHR + textStatus+ errorThrown )
+		 }
+		   }); 
+	  
+		}
+
+		else if ((value) && (departmentSelect === 'placeholder') && (locationSelect !== 'placeholder')) {
+			$.ajax({
+			 url: "php/searchLocation.php",
+			 type: 'POST',
+			 dataType: 'json', 
+			 data:{
+				value: value,
+				id: locationSelect
+			   
+			 },
+			 success: function(result) {
+			   $('#records-card-list').html('');
+			   $('#count').html('');
+			   let data = result.data;
+			   $('#count').html(data.length);
+			   for (let i=0; i<data.length; i++){
+			   
+				   let id= data[i].id;
+				   let first_name = data[i].firstName;
+				   let last_name= data[i].lastName;
+				   let email = data[i].email;
+				   let department = data[i].department;
+				   let job = data[i].jobTitle;
+				   let location = data[i].location;
+				   let first_letterF = data[i].firstName.charAt(0);
+				   let first_letterL =  data[i].lastName.charAt(0);
+				   let span_avatr = first_letterL + first_letterF;
+				   let new_card = createEmployeeCard(id, first_name, last_name, email, department, job, location, span_avatr);
+					   $('#records-card-list').append(new_card);
+					   updateEmployeeClick(id);
+					   deleteEmployeeClick(id);
+		
+			   }
+				  
+				
+				   
+			 },
+			 error: function(jqXHR, textStatus, errorThrown) {
+			   console.log(jqXHR + textStatus+ errorThrown )
+			 }
+			   }); 
+		  
+			}
+			else if ((value) && (departmentSelect !== 'placeholder') && (locationSelect !== 'placeholder')) {
+				$.ajax({
+				 url: "php/searchBoth.php",
+				 type: 'POST',
+				 dataType: 'json', 
+				 data:{
+					value: value,
+					locationId: locationSelect,
+					departmentId: departmentSelect
+				 },
+				 success: function(result) {
+				   $('#records-card-list').html('');
+				   $('#count').html('');
+				   let data = result.data;
+				   $('#count').html(data.length);
+				   for (let i=0; i<data.length; i++){
+				   
+					   let id= data[i].id;
+					   let first_name = data[i].firstName;
+					   let last_name= data[i].lastName;
+					   let email = data[i].email;
+					   let department = data[i].department;
+					   let job = data[i].jobTitle;
+					   let location = data[i].location;
+					   let first_letterF = data[i].firstName.charAt(0);
+					   let first_letterL =  data[i].lastName.charAt(0);
+					   let span_avatr = first_letterL + first_letterF;
+					   let new_card = createEmployeeCard(id, first_name, last_name, email, department, job, location, span_avatr);
+						   $('#records-card-list').append(new_card);
+						   updateEmployeeClick(id);
+						   deleteEmployeeClick(id);
+			
+				   }
+					  
+					
+					   
+				 },
+				 error: function(jqXHR, textStatus, errorThrown) {
+				   console.log(jqXHR + textStatus+ errorThrown )
+				 }
+				   }); 
+			  
+				}
+
+				else if ((!value) && (departmentSelect !== 'placeholder') && (locationSelect === 'placeholder')) {
+					$.ajax({
+					 url: "php/searchDepartmentOnly.php",
+					 type: 'POST',
+					 dataType: 'json', 
+					 data:{
+						value: value,
+						locationId: locationSelect,
+						departmentId: departmentSelect
+					 },
+					 success: function(result) {
+					   $('#records-card-list').html('');
+					   $('#count').html('');
+					   let data = result.data;
+					   $('#count').html(data.length);
+					   for (let i=0; i<data.length; i++){
+					   
+						   let id= data[i].id;
+						   let first_name = data[i].firstName;
+						   let last_name= data[i].lastName;
+						   let email = data[i].email;
+						   let department = data[i].department;
+						   let job = data[i].jobTitle;
+						   let location = data[i].location;
+						   let first_letterF = data[i].firstName.charAt(0);
+						   let first_letterL =  data[i].lastName.charAt(0);
+						   let span_avatr = first_letterL + first_letterF;
+						   let new_card = createEmployeeCard(id, first_name, last_name, email, department, job, location, span_avatr);
+							   $('#records-card-list').append(new_card);
+							   updateEmployeeClick(id);
+							   deleteEmployeeClick(id);
+				
+					   }
+						  
+						
+						   
+					 },
+					 error: function(jqXHR, textStatus, errorThrown) {
+					   console.log(jqXHR + textStatus+ errorThrown )
+					 }
+					   }); 
+				  
+					}
+
+					else if ((!value) && (departmentSelect === 'placeholder') && (locationSelect !== 'placeholder')) {
+						$.ajax({
+						 url: "php/searchLocationOnly.php",
+						 type: 'POST',
+						 dataType: 'json', 
+						 data:{
+							value: value,
+							locationId: locationSelect,
+							departmentId: departmentSelect
+						 },
+						 success: function(result) {
+						   $('#records-card-list').html('');
+						   $('#count').html('');
+						   let data = result.data;
+						   $('#count').html(data.length);
+						   for (let i=0; i<data.length; i++){
+							   let id= data[i].id;
+							   let first_name = data[i].firstName;
+							   let last_name= data[i].lastName;
+							   let email = data[i].email;
+							   let department = data[i].department;
+							   let job = data[i].jobTitle;
+							   let location = data[i].location;
+							   let first_letterF = data[i].firstName.charAt(0);
+							   let first_letterL =  data[i].lastName.charAt(0);
+							   let span_avatr = first_letterL + first_letterF;
+							   let new_card = createEmployeeCard(id, first_name, last_name, email, department, job, location, span_avatr);
+								   $('#records-card-list').append(new_card);
+								   updateEmployeeClick(id);
+								   deleteEmployeeClick(id);
+					
+						   }
+							  
+							
+							   
+						 },
+						 error: function(jqXHR, textStatus, errorThrown) {
+						   console.log(jqXHR + textStatus+ errorThrown )
+						 }
+						   }); 
+					  
+						}
+						else {
+							getEmployees();
+						  }
+					
+
+   }
