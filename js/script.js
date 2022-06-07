@@ -624,7 +624,6 @@ function updateEmployee(id) {
   function confirmUpdateEmployee(id){
 	$('#updateEmployeeConfirmBtn').on('click',
 	function(){
-		console.log('hhh')
 		let email = $('#Email').val()
 		let fName = $('#FirstName').val();
 		let lName = $('#LastName').val();
