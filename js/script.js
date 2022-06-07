@@ -1,12 +1,8 @@
 
 
 let circleColors = ['primary','secondary','success','warning','info','light'];
+let departmentdb = [];
 
-
-$(document).ready(function () {
-	$("#loader").fadeOut("slow");
-     main()
-  });
 
   function main(){
 	getEmployees();
@@ -14,7 +10,6 @@ $(document).ready(function () {
 	getLocations() ; 
   }
 
-  let departmentdb = [];
   
   $('#employee-search').on('click',function() {    
 	searchEmployee();
@@ -555,25 +550,15 @@ function addNewLocation() {
    }
 
 
-   function updateEmployeeClick(id) {
-	$(`#edit${id}`).on('click', function() {
-		appendUpdateForm(id);
-		confirmUpdateEmployee(id);
-
-	});
-
-
-}
+   
   
 function appendUpdateForm(id){
-
 	$.ajax({
 		url: "php/getAll.php",
 		type: 'POST',
 		dataType: 'json',
 		data: {		},
 		success: function(result) {
-			$('#editEmployeeModal').html('');
 			let data = result.data;
 			for (let i= 0; i< data.length; i++){
 			  let employeeID = data[i].id;
@@ -583,8 +568,12 @@ function appendUpdateForm(id){
 			  let job = data[i].jobTitle;
 			  let email = data[i].email;
 			  let department = data[i].department;
-			  let updateForm = createUpdateForm(firstName, lastName, job, email);
-			  $('#editEmployeeModal').append(updateForm);
+			  console.log(firstName,lastName,job,email)
+			  $('#FirstName').val(firstName),
+			  $('#LastName').val(lastName),
+			  $('#JobTitle').val(job),
+			  $('#Email').val(email),
+		
 			  getDropdowns($('#updateDepSelect'), departmentdb);
 			  for(let i=0; i<departmentdb.length; i++){
 				if(department == departmentdb[i].name){
@@ -600,48 +589,7 @@ function appendUpdateForm(id){
 
 }
 
-  function createUpdateForm(fName, lName, job, mail){
-   let form = `
-   <div class="modal-dialog" role="document">
-     <div class="modal-content">
-       <div class="modal-header" id="personnelHeader">
-         <h6 class="modal-title">Update Employee</h6>
-         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-         </button>
-       </div>
-       <div class="modal-body">
-           <form>
-               <div class="form">
-                 <label for="FirstName">First Name</label>
-                 <input class="form-control" id="FirstName" value="${fName}"></input>
-               </div>
-               <div class="form">
-                   <label for="LastName">Last Name</label>
-                   <input class="form-control" id="LastName" value="${lName}"></input>
-                 </div>
-                 <div class="form">
-                   <label for="JobTitle">Job Title</label>
-                   <input class="form-control" id="JobTitle" value="${job}"></input>
-                 </div>
-                 <div class="form">
-                   <label for="Email">Email</label>
-                   <input class="form-control" id="Email" value="${mail}"></input>
-                 </div>
-               <div class="form">
-                   <label for="updateDepSelect">Department</label>
-                   <select class="form-control" id="updateDepSelect">
-                   </select>
-                 </div>
-             </form>
-       </div>
-       <div class="modal-footer">
-         <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-         <button class="confirmBtn btn" id='updateEmployeeConfirmBtn'>Save</button>
-       </div>
-     </div>
-   </div>` 
- return form;
-}
+  
 	
   
 function updateEmployee(id) {
@@ -674,8 +622,9 @@ function updateEmployee(id) {
   
 	
   function confirmUpdateEmployee(id){
-	$('#updateEmployeeConfirmBtn').click(
+	$('#updateEmployeeConfirmBtn').on('click',
 	function(){
+		console.log('hhh')
 		let email = $('#Email').val()
 		let fName = $('#FirstName').val();
 		let lName = $('#LastName').val();
@@ -688,6 +637,17 @@ function updateEmployee(id) {
 	}
   )
   }
+
+  function updateEmployeeClick(id) {
+	$(`#edit${id}`).on('click', function() {
+		appendUpdateForm(id);
+		confirmUpdateEmployee(id);
+
+	});
+
+
+}
+
 
   function deleteEmployeeClick(id){
 	$('#del'+id).click(
@@ -1091,3 +1051,8 @@ let	locationSelect = $('#locationsel option:selected').val();
 					
 
    }
+
+   $(document).ready(function () {
+	$("#loader").fadeOut("slow");
+     main()
+  });
