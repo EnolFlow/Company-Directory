@@ -1,7 +1,7 @@
 
 
 let circleColors = ['primary','secondary','success','warning','info','light'];
-let departmentdb = [];
+
 
 
   function main(){
@@ -43,7 +43,7 @@ $('#locations-btn').click(
     }
 );
 
-
+let departmentdb = [];
   $('#reset').click(
     function(){
     $('#departmentsel').val('placeholder'); 
