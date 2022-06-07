@@ -2,28 +2,31 @@
 
 let circleColors = ['primary','secondary','success','warning','info','light'];
 
-
-
   function main(){
 	getEmployees();
 	getDepartments();
 	getLocations() ; 
   }
-
-  
-  $('#employee-search').on('click',function() {    
-	searchEmployee();
-
+  $('#search').keyup(function() {
+ let searchTerm = $('#search').val();
+let department = $('#departmentsel ').val();
+let loc = $('#locationsel ').val();
+	getEmployeeByName(searchTerm,department,loc);
   });
 
-  $('#searchModals').click(
-    function(){
-    $('#departmentsel').val('placeholder'); 
-    $('#locationsel').val('placeholder'); 
-    $('#name').val('');
-    }
-);
+  $('#departmentsel').change(function() {
+	let searchTerm = $('#search').val();
+	let department = $('#departmentsel ').val();
+	let loc = $('#locationsel ').val();
+	 getEmployeeByName(searchTerm,department,loc);
+	});
 
+  $('#locationsel').change(function() {
+	let searchTerm = $('#search').val();
+	let department = $('#departmentsel ').val();
+	let loc = $('#locationsel ').val();
+		getEmployeeByName(searchTerm,department,loc);
+  });
    
   
   $('#employees-btn').click(
@@ -48,7 +51,8 @@ let departmentdb = [];
     function(){
     $('#departmentsel').val('placeholder'); 
     $('#locationsel').val('placeholder'); 
-    $('#name').val('');
+    $('#search').val('');
+	getEmployees();
     }
 );
 
@@ -305,7 +309,7 @@ function   getEmployees(){
 		success: function(result) {	
 			$('#addEmployeebtn').show();	
 		    $('#modals').show();
-			$('#searchModals').show();	
+			$('#filters').show();	
 			$('#records-card-list').html('');		
 			$('#count').html('');
 			$('#insertIcon').html('');
@@ -370,7 +374,7 @@ function createEmployeeCard(id, first_name, last_name, email, department, job, l
 		let departmentdb = result.data;
 		$('#addEmployeebtn').hide();	
 		$('#modals').hide();	
-		$('#searchModals').hide();		
+		$('#filters').hide();		
 		$('#records-card-list').html('');		
 		$('#count').html('');
 		$('#insertIcon').html('');
@@ -434,7 +438,7 @@ function createEmployeeCard(id, first_name, last_name, email, department, job, l
           let  locationdb= result.data;
 			$('#addEmployeebtn').hide();	
 			$('#modals').hide();	
-			$('#searchModals').hide();		
+			$('#filters').hide();		
 			$('#records-card-list').html('');		
 			$('#count').html('');
 			$('#insertIcon').html('');
@@ -779,277 +783,52 @@ function checkDeleteDep(depID){
 	  }); 
 	})
   }
-  
-  function searchEmployee(){
-let	departmentSelect = $('#departmentsel option:selected').val();	
-let	locationSelect = $('#locationsel option:selected').val();
-	let value = $('#name').val();
-	if ((value) && (departmentSelect === 'placeholder') && (locationSelect === 'placeholder')) {
-	 $.ajax({
-	  url: "php/getEmployeeByName.php",
+
+  function getEmployeeByName(searchTerm,dep,loc){
+	$.ajax({
+	  url: "php/searchBoth.php",
 	  type: 'POST',
 	  dataType: 'json', 
 	  data:{
-		value: value
+		searchTerm : searchTerm,
+		department : dep,
+	   location : loc,
+
 	  },
 	  success: function(result) {
-		$('#records-card-list').html('');
+		$('#records-card-list').html('');		
 		$('#count').html('');
-		let data = result.data;
-		$('#count').html(data.length);
-		for (let i=0; i<data.length; i++){
-		
-			let id= data[i].id;
-			let first_name = data[i].firstName;
-			let last_name= data[i].lastName;
-			let email = data[i].email;
+		$('#insertIcon').html('');
+		  let data = result.data.personnel;
+		console.log(data)
+		   $('#count').html(data.length);
+		   $('#insertIcon').html('<i class="fa-solid fa-people-group"></i>');
+		   for (let i = 0; i < data.length; i++) {
 			let department = data[i].department;
-			let job = data[i].jobTitle;
-			let location = data[i].location;
+		  let location = data[i].location
+		  let first_name = data[i].firstName;
+			let last_name = data[i].lastName;
 			let first_letterF = data[i].firstName.charAt(0);
 			let first_letterL =  data[i].lastName.charAt(0);
 			let span_avatr = first_letterL + first_letterF;
+			let email = data[i].email;
+		   let id = data[i].id;
+		  let job = data[i].jobTitle;
 			let new_card = createEmployeeCard(id, first_name, last_name, email, department, job, location, span_avatr);
-				$('#records-card-list').append(new_card);
-				updateEmployeeClick(id);
-				deleteEmployeeClick(id);
- 
-		}
-		   
-		 
+			$('#records-card-list').append(new_card);
+			updateEmployeeClick(id)
+			deleteEmployeeClick(id);
 			
+		}  
+
 	  },
 	  error: function(jqXHR, textStatus, errorThrown) {
 		console.log(jqXHR + textStatus+ errorThrown )
 	  }
-    	}); 
+	}); 
    
-     }
-
-	else if ((value) && (departmentSelect !== 'placeholder') && (locationSelect === 'placeholder')) {
-		$.ajax({
-		 url: "php/searchDepartment.php",
-		 type: 'POST',
-		 dataType: 'json', 
-		 data:{
-			value: value,
-            id: departmentSelect
-		   
-		 },
-		 success: function(result) {
-		
-		   $('#records-card-list').html('');
-		   $('#count').html('');
-		   let data = result.data;
-		   $('#count').html(data.length);
-		   for (let i=0; i<data.length; i++){
-		   
-			   let id= data[i].id;
-			   let first_name = data[i].firstName;
-			   let last_name= data[i].lastName;
-			   let email = data[i].email;
-			   let department = data[i].department;
-			   let job = data[i].jobTitle;
-			   let location = data[i].location;
-			   let first_letterF = data[i].firstName.charAt(0);
-			   let first_letterL =  data[i].lastName.charAt(0);
-			   let span_avatr = first_letterL + first_letterF;
-			   let new_card = createEmployeeCard(id, first_name, last_name, email, department, job, location, span_avatr);
-				   $('#records-card-list').append(new_card);
-				   updateEmployeeClick(id);
-				   deleteEmployeeClick(id);
-	
-		   }
-			  
-			
-			   
-		 },
-		 error: function(jqXHR, textStatus, errorThrown) {
-		   console.log(jqXHR + textStatus+ errorThrown )
-		 }
-		   }); 
-	  
-		}
-
-		else if ((value) && (departmentSelect === 'placeholder') && (locationSelect !== 'placeholder')) {
-			$.ajax({
-			 url: "php/searchLocation.php",
-			 type: 'POST',
-			 dataType: 'json', 
-			 data:{
-				value: value,
-				id: locationSelect
-			   
-			 },
-			 success: function(result) {
-			   $('#records-card-list').html('');
-			   $('#count').html('');
-			   let data = result.data;
-			   $('#count').html(data.length);
-			   for (let i=0; i<data.length; i++){
-			   
-				   let id= data[i].id;
-				   let first_name = data[i].firstName;
-				   let last_name= data[i].lastName;
-				   let email = data[i].email;
-				   let department = data[i].department;
-				   let job = data[i].jobTitle;
-				   let location = data[i].location;
-				   let first_letterF = data[i].firstName.charAt(0);
-				   let first_letterL =  data[i].lastName.charAt(0);
-				   let span_avatr = first_letterL + first_letterF;
-				   let new_card = createEmployeeCard(id, first_name, last_name, email, department, job, location, span_avatr);
-					   $('#records-card-list').append(new_card);
-					   updateEmployeeClick(id);
-					   deleteEmployeeClick(id);
-		
-			   }
-				  
-				
-				   
-			 },
-			 error: function(jqXHR, textStatus, errorThrown) {
-			   console.log(jqXHR + textStatus+ errorThrown )
-			 }
-			   }); 
-		  
-			}
-			else if ((value) && (departmentSelect !== 'placeholder') && (locationSelect !== 'placeholder')) {
-				$.ajax({
-				 url: "php/searchBoth.php",
-				 type: 'POST',
-				 dataType: 'json', 
-				 data:{
-					value: value,
-					locationId: locationSelect,
-					departmentId: departmentSelect
-				 },
-				 success: function(result) {
-				   $('#records-card-list').html('');
-				   $('#count').html('');
-				   let data = result.data;
-				   $('#count').html(data.length);
-				   for (let i=0; i<data.length; i++){
-				   
-					   let id= data[i].id;
-					   let first_name = data[i].firstName;
-					   let last_name= data[i].lastName;
-					   let email = data[i].email;
-					   let department = data[i].department;
-					   let job = data[i].jobTitle;
-					   let location = data[i].location;
-					   let first_letterF = data[i].firstName.charAt(0);
-					   let first_letterL =  data[i].lastName.charAt(0);
-					   let span_avatr = first_letterL + first_letterF;
-					   let new_card = createEmployeeCard(id, first_name, last_name, email, department, job, location, span_avatr);
-						   $('#records-card-list').append(new_card);
-						   updateEmployeeClick(id);
-						   deleteEmployeeClick(id);
-			
-				   }
-					  
-					
-					   
-				 },
-				 error: function(jqXHR, textStatus, errorThrown) {
-				   console.log(jqXHR + textStatus+ errorThrown )
-				 }
-				   }); 
-			  
-				}
-
-				else if ((!value) && (departmentSelect !== 'placeholder') && (locationSelect === 'placeholder')) {
-					$.ajax({
-					 url: "php/searchDepartmentOnly.php",
-					 type: 'POST',
-					 dataType: 'json', 
-					 data:{
-						value: value,
-						locationId: locationSelect,
-						departmentId: departmentSelect
-					 },
-					 success: function(result) {
-					   $('#records-card-list').html('');
-					   $('#count').html('');
-					   let data = result.data;
-					   $('#count').html(data.length);
-					   for (let i=0; i<data.length; i++){
-					   
-						   let id= data[i].id;
-						   let first_name = data[i].firstName;
-						   let last_name= data[i].lastName;
-						   let email = data[i].email;
-						   let department = data[i].department;
-						   let job = data[i].jobTitle;
-						   let location = data[i].location;
-						   let first_letterF = data[i].firstName.charAt(0);
-						   let first_letterL =  data[i].lastName.charAt(0);
-						   let span_avatr = first_letterL + first_letterF;
-						   let new_card = createEmployeeCard(id, first_name, last_name, email, department, job, location, span_avatr);
-							   $('#records-card-list').append(new_card);
-							   updateEmployeeClick(id);
-							   deleteEmployeeClick(id);
-				
-					   }
-						  
-						
-						   
-					 },
-					 error: function(jqXHR, textStatus, errorThrown) {
-					   console.log(jqXHR + textStatus+ errorThrown )
-					 }
-					   }); 
-				  
-					}
-
-					else if ((!value) && (departmentSelect === 'placeholder') && (locationSelect !== 'placeholder')) {
-						$.ajax({
-						 url: "php/searchLocationOnly.php",
-						 type: 'POST',
-						 dataType: 'json', 
-						 data:{
-							value: value,
-							locationId: locationSelect,
-							departmentId: departmentSelect
-						 },
-						 success: function(result) {
-						   $('#records-card-list').html('');
-						   $('#count').html('');
-						   let data = result.data;
-						   $('#count').html(data.length);
-						   for (let i=0; i<data.length; i++){
-							   let id= data[i].id;
-							   let first_name = data[i].firstName;
-							   let last_name= data[i].lastName;
-							   let email = data[i].email;
-							   let department = data[i].department;
-							   let job = data[i].jobTitle;
-							   let location = data[i].location;
-							   let first_letterF = data[i].firstName.charAt(0);
-							   let first_letterL =  data[i].lastName.charAt(0);
-							   let span_avatr = first_letterL + first_letterF;
-							   let new_card = createEmployeeCard(id, first_name, last_name, email, department, job, location, span_avatr);
-								   $('#records-card-list').append(new_card);
-								   updateEmployeeClick(id);
-								   deleteEmployeeClick(id);
-					
-						   }
-							  
-							
-							   
-						 },
-						 error: function(jqXHR, textStatus, errorThrown) {
-						   console.log(jqXHR + textStatus+ errorThrown )
-						 }
-						   }); 
-					  
-						}
-						else {
-							getEmployees();
-						  }
-					
-
    }
+ 
 
    $(document).ready(function () {
 	$("#loader").fadeOut("slow");
